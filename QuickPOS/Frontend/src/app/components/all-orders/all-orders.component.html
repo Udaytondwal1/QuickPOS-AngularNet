@@ -1,0 +1,60 @@
+<div class="min-h-screen p-6">
+  <div class="max-w-6xl p-6 mx-auto rounded-lg shadow-md">
+    <h2 class="mb-4 text-2xl font-bold">Order List</h2>
+
+    <!-- Search Bar -->
+    <div class="flex items-center mb-4">
+      <input
+        [(ngModel)]="searchQuery"
+        (input)="filterOrders()"
+        type="text"
+        class="w-1/3 mr-4 input input-bordered"
+        placeholder="Search by Order ID, Payment Mode, Order Status, or Customer Name"
+      />
+    </div>
+
+    <!-- Export Buttons -->
+    <div class="mb-4">
+      <button (click)="exportToExcel()" class="mr-2 btn btn-sm btn-success">Export to Excel</button>
+      <button (click)="exportToPDF()" class="btn btn-sm btn-primary">Export to PDF</button>
+    </div>
+
+    <!-- Order Table -->
+    <div *ngIf="loading" class="text-center">
+      <p>Loading orders...</p>
+    </div>
+    <div *ngIf="!loading && filteredOrders.length === 0" class="text-center">
+      <p>No orders found.</p>
+    </div>
+    <div class="overflow-x-auto" *ngIf="filteredOrders.length > 0">
+      <table class="table w-full table-zebra" #orderTable>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer Name</th>
+            <th>Order Date</th>
+            <th>Total Amount</th>
+            <th>Payment Mode</th>
+            <th>Order Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of filteredOrders">
+            <td>#{{ order.orderId }}</td>
+            <td>{{ order.customerName || 'N/A' }}</td>
+            <td>{{ order.orderDate | date: 'yyyy-MM-dd' }}</td>
+            <td>₹{{ order.totalAmount }}</td>
+            <td>{{ order.paymentMode || 'Cash' }}</td>
+            <td>{{ order.paymentStatus || 'Pending' }}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" [routerLink]="['/order-details', order.orderId]">
+                View
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

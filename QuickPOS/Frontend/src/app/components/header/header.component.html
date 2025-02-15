@@ -1,0 +1,70 @@
+<div class="drawer lg:drawer-open">
+  <!-- Drawer Toggle -->
+  <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+
+  <!-- Main Content -->
+  <div class="drawer-content">
+    <div class="shadow-lg navbar ">
+      <!-- Logo Section -->
+      <div class="flex-1">
+        <!-- <a href="#" class="text-xl normal-case btn btn-ghost">SMC POS</a> -->
+      </div>
+
+      <!-- Hamburger Icon for Drawer -->
+      <div class="flex-none lg:hidden">
+        <label for="my-drawer" class="btn btn-ghost drawer-button">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </label>
+      </div>
+
+      <!-- Desktop Navigation Links -->
+      <div class="hidden lg:flex">
+        <ul class="px-1 menu menu-horizontal">
+        </ul>
+      </div>
+    </div>
+
+    <router-outlet></router-outlet>
+  </div>
+
+  <!-- Drawer Sidebar -->
+  <div class="drawer-side">
+    <label for="my-drawer" class="drawer-overlay">
+      <div class="flex-1">
+        <a href="#" class="text-xl normal-case btn btn-ghost">SMC POS</a>
+        <a role="button" class="inline-block font-mono text-xs link link-hover">1.0.1</a>
+      </div>
+      
+    </label>
+    <ul class="min-h-full p-4 menu rounded-box text-base-content w-80">
+      <li><a routerLink="/dashboard">Dashboard</a></li>
+      <li><a routerLink="/pos-billing">Point of Sale</a></li>
+      <li>
+        <details open>
+          <summary>Products</summary>
+          <ul>
+            <li><a routerLink="/product-list">Product List</a></li>
+          </ul>
+        </details>
+      </li>
+        <li>
+          <details open>
+            <summary>Category</summary>
+            <ul>
+              <li><a routerLink="category-list">Category List</a></li>
+            </ul>
+          </details>
+      </li>
+      <li><a routerLink="/orders">Orders</a></li>
+      <!-- <li><a class="block text-red-600 lg:hidden xl:hidden 2xl:hidden">Logout</a></li> -->
+    </ul>
+  </div>
+</div>

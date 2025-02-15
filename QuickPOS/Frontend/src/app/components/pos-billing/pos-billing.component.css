@@ -1,0 +1,123 @@
+/* General Modal Styles */
+.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .modal-box {
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Invoice Details */
+  .invoice-details h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  
+  .invoice-details p {
+    font-size: 1rem;
+  }
+  
+  /* Table Styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  table th, table td {
+    padding: 12px;
+    text-align: left;
+    
+  }
+  
+  table th {
+    /* background-color: #505050; */
+    font-weight: 600;
+  }
+  
+  table tr:nth-child(even) {
+    /* background-color: #474747; */
+  }
+  
+  table tr:hover {
+    /* background-color: #434343; */
+  }
+  
+  /* Totals Section */
+  .flex {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .font-medium {
+    font-weight: 500;
+  }
+  
+  .font-bold {
+    font-weight: 700;
+  }
+  
+  .text-lg {
+    font-size: 1.125rem;
+  }
+  
+  .text-xl {
+    font-size: 1.25rem;
+  }
+  
+  .modal-action {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  button {
+    font-weight: 600;
+    /* padding: 10px; */
+  }
+
+  /* CSS for fixed alert */
+.fixed-alert {
+  position: fixed;
+  top: 20px; /* Adjust as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999; /* Ensure it appears above other content */
+  width: 80%; /* Adjust the width as needed */
+  max-width: 400px; /* Max width for better responsiveness */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+
+/* Optional styling for alert types */
+.alert-success {
+  background-color: #4caf50;
+  color: white;
+}
+
+.alert-error {
+  background-color: #f44336;
+  color: white;
+}
+
+  
+  /* Responsive Improvements */
+  @media (max-width: 768px) {
+    .modal-box {
+      width: 100%;
+    }
+  }
+  

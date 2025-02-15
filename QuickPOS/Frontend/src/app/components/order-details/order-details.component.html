@@ -1,0 +1,199 @@
+<!-- DaisyUI Alert for General Alerts -->
+<div
+  *ngIf="alertMessage"
+  class="alert"
+  [ngClass]="{
+    'alert-success': alertType === 'success',
+    'alert-error': alertType === 'error',
+    'alert-info': alertType === 'info'
+  }"
+  class="alert fixed-alert"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="w-6 h-6 stroke-current shrink-0"
+    fill="none"
+    viewBox="0 0 24 24"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      [attr.d]="
+        alertType === 'success'
+          ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+          : 'M12 9v6m-3-3h6'
+      "
+    ></path>
+  </svg>
+  <span>{{ alertMessage }}</span>
+</div>
+
+<div class="p-4">
+  <h1 class="mb-4 text-2xl font-bold">Order Details</h1>
+
+  <!-- Order Information -->
+  <div
+    *ngIf="orderDetails; else loading"
+    class="grid gap-4 mb-6 md:grid-cols-2"
+  >
+    <div>
+      <p>
+        <span class="font-semibold">Date:</span>
+        {{ orderDetails.orderDate | date : "yyyy-MM-dd" }}
+      </p>
+      <p>
+        <span class="font-semibold">Order ID:</span> {{ orderDetails.orderId }}
+      </p>
+      <p>
+        <span class="font-semibold">Customer Name:</span>
+        {{ orderDetails.customerName }}
+      </p>
+    </div>
+    <div>
+      <p>
+        <span class="font-semibold">Payment Mode:</span>
+        {{ orderDetails.paymentMode }}
+      </p>
+      <p>
+        <span class="font-semibold">Order Status:</span>
+        {{
+          orderDetails.paymentStatus == null
+            ? "Pending"
+            : orderDetails.paymentStatus
+        }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Products Table -->
+  <div *ngIf="orderDetails" class="mb-6 overflow-x-auto">
+    <table class="table w-full table-zebra">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Tax</th>
+          <th>Total Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of orderDetails.items; let i = index">
+          <th>{{ i + 1 }}</th>
+          <td>{{ product.productName }}</td>
+          <td>{{ product.quantity }}</td>
+          <td>₹{{ product.price }}</td>
+          <td>₹{{ product.tax }}</td>
+          <td>₹{{ product.total }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Loading State -->
+  <ng-template #loading>
+    <p>Loading order details...</p>
+  </ng-template>
+
+  <!-- Amount Breakdown -->
+  <div *ngIf="orderDetails" class="p-4 mb-6 rounded-lg w-52">
+    <h3 class="text-lg font-bold">Amount Breakdown</h3>
+    <div class="flex justify-between">
+      <p>Subtotal:</p>
+      <p>₹{{ orderDetails.subtotal }}</p>
+    </div>
+    <div class="flex justify-between">
+      <p>Tax:</p>
+      <p>₹{{ orderDetails.tax }}</p>
+    </div>
+    <div class="flex justify-between">
+      <p>Discount:</p>
+      <p>₹{{ orderDetails.discount }}</p>
+    </div>
+    <div class="flex justify-between font-bold">
+      <p>Total Amount:</p>
+      <p>₹{{ orderDetails.totalAmount }}</p>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex gap-4">
+    <button class="btn btn-primary" (click)="printInvoice()">
+      Print Invoice
+    </button>
+    <button class="btn btn-accent" (click)="openModifyOrderModal()" [disabled]="orderDetails.paymentStatus === 'Canceled'">
+      Modify Order
+    </button>    
+    <button class="btn btn-error" (click)="CancelOrder(orderDetails.orderId)" [disabled]="orderDetails.paymentStatus === 'Canceled'">
+      Cancel Order
+    </button>
+  </div>
+
+  <!-- Modify Order Modal -->
+  <!-- Modal Toggle Input -->
+  <!-- Modal Toggle Input -->
+  <input type="checkbox" id="modify-order-modal" class="modal-toggle" />
+
+  <!-- Modal Content -->
+  <div class="modal">
+    <div class="max-w-3xl modal-box">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">
+          Modify Order Quantities
+        </h2>
+        <label for="modify-order-modal" class="btn btn-sm btn-circle">✕</label>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="space-y-4">
+        <!-- Product List -->
+        <div
+          *ngFor="let product of orderDetails.items"
+          class="flex items-center justify-between p-3 bg-gray-100 rounded-lg"
+        >
+          <!-- Product Information -->
+          <div>
+            <p class="text-lg font-medium">{{ product.productName }}</p>
+            <p class="text-sm text-gray-500">
+              Price: ₹{{ product.price }} | Tax: ₹{{ product.tax }}
+            </p>
+          </div>
+
+          <!-- Quantity Input Section -->
+          <div class="flex items-center gap-4">
+            <!-- Current Quantity Badge -->
+            <span class="font-semibold text-gray-600 badge badge-outline"
+              >Current: {{ product.quantity }}</span
+            >
+            <!-- Editable Quantity Input -->
+            <div class="flex items-center gap-2">
+              <label for="quantity" class="text-sm font-semibold text-gray-700"
+                >New:</label
+              >
+              <input
+                type="number"
+                min="1"
+                [(ngModel)]="product.newQuantity"
+                [value]="product.quantity"
+                class="w-20 text-center input input-bordered"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-between modal-action">
+        <!-- Cancel Button -->
+        <label for="modify-order-modal" class="btn btn-outline">Cancel</label>
+        <!-- Save Button -->
+        <button class="btn btn-primary" (click)="saveModifiedOrder()">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

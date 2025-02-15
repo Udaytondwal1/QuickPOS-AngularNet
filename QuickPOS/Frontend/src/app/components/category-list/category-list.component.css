@@ -1,0 +1,26 @@
+/* CSS for fixed alert */
+.fixed-alert {
+    position: fixed;
+    top: 20px; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999; /* Ensure it appears above other content */
+    width: 80%; /* Adjust the width as needed */
+    max-width: 400px; /* Max width for better responsiveness */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 0 auto;
+  }
+  
+  /* Optional styling for alert types */
+  .alert-success {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .alert-error {
+    background-color: #f44336;
+    color: white;
+  }
+  

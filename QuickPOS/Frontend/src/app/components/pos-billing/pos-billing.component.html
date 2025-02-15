@@ -1,0 +1,239 @@
+<!-- DaisyUI Alert -->
+<div *ngIf="showAlert" 
+     [ngClass]="{'alert-success': alertType === 'success', 'alert-error': alertType === 'error'}" 
+     role="alert" 
+     class="alert fixed-alert">
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+          [attr.d]="alertType === 'success' ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' : 'M12 9v6m-3-3h6'"></path>
+  </svg>
+  <span>{{ alertMessage }}</span>
+</div>
+
+
+
+<div class="min-h-screen p-6 ">
+  <div class="p-6 mx-auto rounded-lg shadow-lg max-w-7xl">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-3xl font-bold">POS Billing</h2>
+      <button class="btn btn-primary" (click)="clearOrder()">Clear Order</button>
+    </div>
+
+    <!-- Payment Mode -->
+    <div class="mb-6">
+      <label class="label">
+        <span class="font-medium label-text">Select Payment Mode</span>
+      </label>
+      <select [(ngModel)]="selectedPaymentMode" class="w-full select select-bordered">
+        <option value="Cash">Cash</option>
+        <option value="Card">Card</option>
+        <option value="UPI">UPI</option>
+      </select>
+    </div>
+
+    <!-- Product Selection and Order List -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <!-- Product Selection -->
+      <div class="space-y-6">
+        <!-- Search and Filter -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="label">
+              <span class="font-medium label-text">Search Product</span>
+            </label>
+            <input
+              type="text"
+              (input)="onSearchTermChange()" 
+              [(ngModel)]="searchTerm"
+              class="w-full input input-bordered"
+              placeholder="Search by name or SKU"
+            />
+          </div>
+          <div>
+            <label class="label">
+              <span class="font-medium label-text">Select Category</span>
+            </label>
+            <select
+              [(ngModel)]="selectedCategory"
+              class="w-full select select-bordered"
+              (change)="onCategoryChange()"
+            >
+              <option value="">All Categories</option>
+              <option *ngFor="let category of categories" [value]="category.name">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="overflow-x-auto">
+          <table class="table w-full">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of filteredProducts">
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>₹{{ product.price }}</td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-primary"
+                    (click)="addProductToOrder(product)"
+                  >
+                    Add
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Order List -->
+      <div>
+        <h3 class="mb-4 text-lg font-bold">Order List</h3>
+        <div class="overflow-x-auto">
+          <table class="table w-full">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Product Name</th>
+                <th>Unit Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of orderList; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.name }}</td>
+                <td>₹{{ item.price }}</td>
+                <td class="flex items-center">
+                  <button
+                    class="btn btn-xs btn-outline"
+                    (click)="decreaseQuantity(item)"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    [(ngModel)]="item.quantity"
+                    (ngModelChange)="updateSubtotal()"
+                    class="w-16 mx-2 text-center input input-sm"
+                    [min]="1"
+                  />
+                  <button
+                    class="btn btn-xs btn-outline"
+                    (click)="increaseQuantity(item)"
+                  >
+                    +
+                  </button>
+                </td>
+                <td>₹{{ item.subtotal }}</td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-error"
+                    (click)="removeProductFromOrder(item)"
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Discount Input -->
+        <div class="mt-6">
+          <label class="label">
+            <span class="font-medium label-text">Discount</span>
+          </label>
+          <input
+            type="number"
+            min="0"
+            [(ngModel)]="discount"
+            class="w-full input input-bordered"
+            placeholder="Enter discount amount"
+            (ngModelChange)="updateSubtotal()"
+          />
+        </div>
+
+        <!-- Billing Summary -->
+        <div class="mt-6 space-y-2">
+          <p><strong>Subtotal:</strong> ₹{{ subtotal }}</p>
+          <p><strong>Tax ({{ totalTaxPercent | number: '1.2-2' }}%):</strong> ₹{{ totalTax }}</p>
+          <p><strong>Discount:</strong> ₹{{ discountAmount }}</p>
+          <p><strong>Total:</strong> ₹{{ totalAmount }}</p>
+        </div>
+
+         <!-- Submit Order and Print Invoice -->
+    <div class="flex flex-wrap justify-between gap-4 mt-6">
+      <button class="w-full btn btn-success sm:w-auto" (click)="openOrderModal()">Submit Order</button>
+      <button class="w-full btn btn-primary sm:w-auto" (click)="openInvoiceModal()">Print Invoice</button>
+    </div>
+      </div>
+    </div>
+
+   
+  </div>
+
+  <input type="checkbox" id="order-modal" class="modal-toggle" />
+
+  <!-- Modal Content -->
+  <div class="modal">
+    <div class="max-w-3xl modal-box">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">
+          Confirm Order
+        </h2>
+        <label for="order-modal" class="btn btn-sm btn-circle">✕</label>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="mb-6">
+        <label class="label">
+          <span class="font-medium label-text">Enter Customer Name</span>
+        </label>
+        <input
+        type="text"
+        [(ngModel)]="customerName"
+        class="w-full input input-bordered"
+        placeholder="Enter Costomer Name"
+      />
+      </div>
+      <div class="mb-6">
+        <label class="label">
+          <span class="font-medium label-text">Select Payment Status</span>
+        </label>
+        <select [(ngModel)]="paymentstatus" class="w-full select select-bordered">
+          <option value="Paid">Paid</option>
+          <option value="Pending">Pending</option>
+        </select>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-between modal-action">
+        <!-- Cancel Button -->
+        <label for="modify-order-modal" class="btn btn-outline" (click)="CloseOrderModel()">Cancel</label>
+        <!-- Save Button -->
+        <button class="btn btn-primary" (click)="submitOrder()">
+          Confirm Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+

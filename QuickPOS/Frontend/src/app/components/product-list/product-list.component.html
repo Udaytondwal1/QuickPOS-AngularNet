@@ -1,0 +1,262 @@
+<!-- DaisyUI Alert for General Alerts -->
+<div
+  *ngIf="showGeneralAlert"
+  [ngClass]="{
+    'alert-success': alertType === 'success',
+    'alert-error': alertType === 'error'
+  }"
+  role="alert"
+  class="alert fixed-alert"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="w-6 h-6 stroke-current shrink-0"
+    fill="none"
+    viewBox="0 0 24 24"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      [attr.d]="
+        alertType === 'success'
+          ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+          : 'M12 9v6m-3-3h6'
+      "
+    ></path>
+  </svg>
+  <span>{{ alertMessage }}</span>
+</div>
+
+<!-- DaisyUI Alert for Deletion Confirmation -->
+<div
+  *ngIf="showDeletionAlert"
+  [ngClass]="{
+    'alert-info': alertType === 'info',
+    'alert-success': alertType === 'success',
+    'alert-error': alertType === 'error'
+  }"
+  role="alert"
+  class="alert fixed-alert"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    class="w-6 h-6 stroke-info shrink-0"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+    ></path>
+  </svg>
+  <span>{{ alertMessage }}</span>
+  <div>
+    <button class="btn btn-sm" (click)="cancelDeletion()">Cancel</button>
+    <button class="btn btn-sm btn-primary" (click)="confirmDeletion()">
+      Confirm
+    </button>
+  </div>
+</div>
+
+<div class="min-h-screen p-6">
+  <div class="max-w-6xl p-6 mx-auto rounded-lg shadow-md">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-bold">Product List</h2>
+      <button class="btn btn-primary" (click)="addProduct()">
+        Add Product
+      </button>
+    </div>
+
+    <!-- Products Table -->
+    <div class="mb-6 overflow-x-auto">
+      <table class="table w-full table-auto">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product Name</th>
+            <th>SKU</th>
+            <th>Category</th>
+            <th>Price (₹)</th>
+            <th>Quantity</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of products; let i = index">
+            <th>{{ i + 1 }}</th>
+            <td>{{ product.name }}</td>
+            <td>{{ product.sku }}</td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.quantity }}</td>
+            <td class="flex space-x-2">
+              <button
+                class="btn btn-info btn-sm"
+                (click)="viewProduct(product)"
+              >
+                View
+              </button>
+              <button
+                class="btn btn-warning btn-sm"
+                (click)="editProduct(product)"
+              >
+                Edit
+              </button>
+              <button
+                class="btn btn-error btn-sm"
+                (click)="deleteProduct(product.id)"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Product Modal -->
+  <input type="checkbox" id="product-modal" class="modal-toggle" />
+  <div class="modal">
+    <div class="max-w-4xl modal-box">
+      <h3 class="text-lg font-bold">
+        {{ isEditMode ? "Edit Product" : "Add/View Product" }}
+      </h3>
+      <form *ngIf="selectedProduct" class="space-y-6">
+        <!-- Product Name and SKU -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="label">
+              <span class="font-medium label-text">Product Name</span>
+            </label>
+            <input
+              type="text"
+              class="w-full input input-bordered"
+              [readonly]="!isEditMode"
+              [(ngModel)]="selectedProduct.name"
+              name="name"
+            />
+          </div>
+          <div>
+            <label class="label">
+              <span class="font-medium label-text">SKU</span>
+            </label>
+            <input
+              type="text"
+              class="w-full input input-bordered"
+              [readonly]="!isEditMode"
+              [(ngModel)]="selectedProduct.sku"
+              name="sku"
+            />
+          </div>
+        </div>
+
+        <!-- Product Category and Price -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="label">
+              <span class="font-medium label-text">Category</span>
+            </label>
+            <select
+              class="w-full select select-bordered"
+              [disabled]="!isEditMode"
+              [(ngModel)]="selectedProduct.category"
+              name="category"
+            >
+              <option disabled>Select Category</option>
+              <option
+                *ngFor="let category of categories"
+                [value]="category.name"
+              >
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label class="label">
+              <span class="font-medium label-text">Price (₹)</span>
+            </label>
+            <input
+              type="number"
+              class="w-full input input-bordered"
+              [readonly]="!isEditMode"
+              [(ngModel)]="selectedProduct.price"
+              name="price"
+            />
+          </div>
+        </div>
+
+        <!-- Quantity in Stock and Tax -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="label">
+              <span class="font-medium label-text">Quantity</span>
+            </label>
+            <input
+              type="number"
+              class="w-full input input-bordered"
+              [readonly]="!isEditMode"
+              [(ngModel)]="selectedProduct.quantity"
+              name="quantity"
+            />
+          </div>
+          <div>
+            <label class="label">
+              <span class="font-medium label-text">Tax (%)</span>
+            </label>
+            <input
+              type="number"
+              class="w-full input input-bordered"
+              [readonly]="!isEditMode"
+              [(ngModel)]="selectedProduct.tax"
+              name="tax"
+            />
+          </div>
+        </div>
+
+        <!-- Product Description -->
+        <div>
+          <label class="label">
+            <span class="font-medium label-text">Description</span>
+          </label>
+          <textarea
+            class="w-full textarea textarea-bordered"
+            placeholder="Enter Product Description"
+            [readonly]="!isEditMode"
+            [(ngModel)]="selectedProduct.description"
+            name="description"
+          ></textarea>
+        </div>
+
+        <!-- Image Upload
+          <div>
+            <label class="label">
+              <span class="font-medium label-text">Image Upload</span>
+            </label>
+            <input
+              type="file"
+              class="w-full file-input file-input-bordered"
+              [disabled]="!isEditMode"
+              (change)="onFileUpload($event)"
+            />
+          </div> -->
+
+        <!-- Modal Actions -->
+        <div class="modal-action">
+          <button
+            *ngIf="isEditMode"
+            class="btn btn-success"
+            type="button"
+            (click)="saveProduct()"
+          >
+            Save
+          </button>
+          <label for="product-modal" class="btn">Close</label>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
