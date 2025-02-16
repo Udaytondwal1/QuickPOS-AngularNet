@@ -137,7 +137,7 @@ Contributions are welcome! Follow these steps:
    ```bash
    git commit -m "Added feature-name"
    ```
-4. Push to the branch:
+4. Push to the branch:  q
    ```bash
    git push origin feature-name
    ```
